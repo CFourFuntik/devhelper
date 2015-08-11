@@ -17,7 +17,7 @@ struct {
 
 bool pressing[KEYS_SIZE];
 
-void keyPressed(CHAR symbol);
+void keyPressed(WCHAR symbol);
 void specKeyPressed(DWORD key);
 
 int VKToChar(unsigned int vk, WCHAR *s)

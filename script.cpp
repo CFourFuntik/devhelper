@@ -4,6 +4,7 @@ F4 - save position
 #include "script.h"
 
 vector<chatLine> chatLines;
+vector<string> chatHistory;
 
 VOID drawText(string text, float posx, float posy, int r, int g, int b)
 {
@@ -23,6 +24,7 @@ VOID drawText(string text, float posx, float posy, int r, int g, int b)
 string curChatText("");
 bool chatEnabled = true, chatWrite = false;
 string fileName;
+int cursorPos = 0, historyPos = -1;
 
 void sendPlayerMessage(const string &message, int r = 255, int g = 255, int b = 255)
 {
@@ -32,10 +34,11 @@ void sendPlayerMessage(const string &message, int r = 255, int g = 255, int b = 
 		chatLines.erase(chatLines.begin(), chatLines.begin() + 1);
 }
 
-void keyPressed(char symbol)
+void keyPressed(WCHAR symbol)
 {
 	if (!chatWrite) return;
-	curChatText += symbol;
+	curChatText.insert(curChatText.begin() + cursorPos, (CHAR)symbol);
+	cursorPos++;
 }
 
 bool commandProcessor(string command)
@@ -120,6 +123,7 @@ void specKeyPressed(DWORD key)
 		}
 		case VK_BACK:
 		{
+			if (!chatWrite) break;
 			if (curChatText.size() > 0)
 			{
 				curChatText.erase(curChatText.size() - 1, 1);
@@ -128,6 +132,7 @@ void specKeyPressed(DWORD key)
 		}
 		case VK_RETURN:
 		{
+			if (!chatWrite) break;
 			if (curChatText.size())
 			{
 				if (curChatText[0] == '/')
@@ -137,10 +142,48 @@ void specKeyPressed(DWORD key)
 				}
 				else
 					sendPlayerMessage(SOCIALCLUB::_SC_GET_NICKNAME() + string(": ") + curChatText, 255, 255, 255);
+				chatHistory.push_back(curChatText);
+				historyPos = -1;
 				curChatText = string("");
+				cursorPos = 0;
 			}
 			chatWrite = false;
 			PLAYER::SET_PLAYER_CONTROL(PLAYER::PLAYER_ID(), !chatWrite, 0);
+			break;
+		}
+		case VK_LEFT:
+		{
+			if (!chatWrite) break;
+			if (cursorPos > 0) cursorPos--;
+			break;
+		}
+		case VK_RIGHT:
+		{
+			if (!chatWrite) break;
+			if (cursorPos < curChatText.size())
+			{
+				cursorPos++;
+			}
+			break;
+		}
+		case VK_UP:
+		{
+			if (!chatWrite) break;
+			if (historyPos < chatHistory.size())
+			{
+				historyPos++;
+				curChatText = chatHistory[chatHistory.size() - historyPos];
+			}
+			break;
+		}
+		case VK_DOWN:
+		{
+			if (!chatWrite) break;
+			if (historyPos > 0)
+			{
+				historyPos--;
+				curChatText = chatHistory[chatHistory.size() - historyPos];
+			}
 			break;
 		}
 	}
@@ -148,16 +191,23 @@ void specKeyPressed(DWORD key)
 
 void main()
 {
-	fileName = string(getenv("USERPROFILE")) + "\\Documents\\Rockstar Games\\GTA V\\savedcoords.txt";
-	sendPlayerMessage("GTAV Developer Mode by LiL Team Initialized");
+	char *pValue;
+	size_t len;
+	errno_t err = _dupenv_s(&pValue, &len, "USERPROFILE");
+	if (err)
+		fileName = string("C:\\savedcoords.txt");
+	else 
+		fileName = string(pValue) + "\\Documents\\Rockstar Games\\GTA V\\savedcoords.txt";
+
+	sendPlayerMessage("GTAV DevHelper by Funtik Initialized");
 	sendPlayerMessage("Press F6 to open chat textbox");
 	while (true)
 	{
 		if (chatEnabled)
 		{
 			GRAPHICS::DRAW_RECT(0.0f, 0.0f, 0.9f, 0.645f, 0, 0, 0, 200);
-			int first = (chatLines.size() > 10) ? (chatLines.size() - 10) : 0;
-			for (int i = first, c = 0; i < chatLines.size(); ++i, ++c)
+			size_t first = (chatLines.size() > 10) ? (chatLines.size() - 10) : 0;
+			for (size_t i = first, c = 0; i < chatLines.size(); ++i, ++c)
 			{
 				drawText(chatLines[i].text, 0.0f, ((float)c)*(0.03f), chatLines[i].r, chatLines[i].g, chatLines[i].b);
 			}
@@ -166,13 +216,9 @@ void main()
 		if (chatWrite)
 		{
 			string chatText(curChatText);
-			DWORD ticks = GetTickCount();
-			ticks /= 100;
-			ticks %= 10;
-			if (ticks <= 5)
-				chatText += '|';
+			chatText.insert(chatText.begin() + cursorPos, '_');
 			GRAPHICS::DRAW_RECT(0.0f, 0.340f, 0.9f, 0.040f, 125, 125, 125, 255);
-			drawText(curChatText, 0.0f, 0.330f, 255, 255, 255);
+			drawText("> " + chatText, 0.0f, 0.330f, 255, 255, 255);
 			UI::SET_PAUSE_MENU_ACTIVE(false);
 		}
 		WAIT(0);
