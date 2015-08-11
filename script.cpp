@@ -168,21 +168,29 @@ void specKeyPressed(DWORD key)
 		}
 		case VK_UP:
 		{
-			if (!chatWrite) break;
-			if (historyPos < chatHistory.size())
+			if (!chatWrite || !chatHistory.size()) break;
+			if (historyPos < (chatHistory.size() - 1) || historyPos == -1)
 			{
 				historyPos++;
-				curChatText = chatHistory[chatHistory.size() - historyPos];
+				curChatText = chatHistory[chatHistory.size() - historyPos - 1];
+				cursorPos = curChatText.size();
 			}
 			break;
 		}
 		case VK_DOWN:
 		{
-			if (!chatWrite) break;
+			if (!chatWrite || !chatHistory.size()) break;
 			if (historyPos > 0)
 			{
 				historyPos--;
-				curChatText = chatHistory[chatHistory.size() - historyPos];
+				curChatText = chatHistory[chatHistory.size() - historyPos - 1];
+				cursorPos = curChatText.size();
+			}
+			else if (historyPos == 0)
+			{
+				historyPos = -1;
+				curChatText = "";
+				cursorPos = 0;
 			}
 			break;
 		}
