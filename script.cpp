@@ -124,9 +124,19 @@ void specKeyPressed(DWORD key)
 		case VK_BACK:
 		{
 			if (!chatWrite) break;
-			if (curChatText.size() > 0)
+			if (cursorPos > 0)
 			{
-				curChatText.erase(curChatText.size() - 1, 1);
+				curChatText.erase(curChatText.begin() + (cursorPos - 1), curChatText.begin() + cursorPos);
+				cursorPos--;
+			}
+			break;
+		}
+		case VK_DELETE:
+		{
+			if (!chatWrite) break;
+			if (cursorPos < curChatText.size())
+			{
+				curChatText.erase(curChatText.begin() + cursorPos, curChatText.begin() + cursorPos + 1);
 			}
 			break;
 		}
