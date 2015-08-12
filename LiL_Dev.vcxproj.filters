@@ -15,5 +15,13 @@
     <ClInclude Include="inc\nativeCaller.h" />
     <ClInclude Include="inc\natives.h" />
     <ClInclude Include="inc\types.h" />
+    <ClInclude Include="models.h">
+      <Filter>gtamp</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="gtamp">
+      <UniqueIdentifier>{f589c4ae-4e24-4104-850e-0c775523c9e4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

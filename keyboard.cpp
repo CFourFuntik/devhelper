@@ -21,7 +21,7 @@ int VKToChar(unsigned int vk, WCHAR *s)
 	if(!GetKeyboardState(kbd))
 		return 0;
 	scan = MapVirtualKeyEx(vk, 0, layout);
-	return ToUnicodeEx(vk, scan, kbd, s, 2, 0, layout);
+	return ToUnicode(vk, scan, kbd, s, 2, 0);
 }
 
 void OnKeyboardMessage(DWORD key, WORD repeats, BYTE scanCode, BOOL isExtended, BOOL isWithAlt, BOOL wasDownBefore, BOOL isUpNow)

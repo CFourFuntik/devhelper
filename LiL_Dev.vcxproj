@@ -19,6 +19,7 @@
     <ClInclude Include="inc\natives.h" />
     <ClInclude Include="inc\types.h" />
     <ClInclude Include="keyboard.h" />
+    <ClInclude Include="models.h" />
     <ClInclude Include="script.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>

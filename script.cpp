@@ -2,6 +2,7 @@
 F4 - save position
 */
 #include "script.h"
+#include "models.h"
 
 vector<chatLine> chatLines;
 vector<string> chatHistory;
@@ -25,6 +26,11 @@ string curChatText("");
 bool chatEnabled = true, chatWrite = false;
 string fileName;
 int cursorPos = 0, historyPos = -1;
+
+//skin change
+bool needSkinChange = false;
+DWORD skin = 0;
+int skinId;
 
 void sendPlayerMessage(const string &message, int r = 255, int g = 255, int b = 255)
 {
@@ -50,6 +56,38 @@ bool commandProcessor(string command)
 	if (!cmd.compare("/help"))
 	{
 		sendPlayerMessage("/save /clear /startfire /stopfire", 0, 125, 0);
+		return true;
+	}
+	else if (!cmd.compare("/randcomps"))
+	{
+		PED::SET_PED_RANDOM_COMPONENT_VARIATION(PLAYER::PLAYER_PED_ID(), FALSE);
+		sendPlayerMessage("Random component variation setted", 0, 200, 0);
+		return true;
+	}
+	else if (!cmd.compare("/model"))
+	{
+		if (!params.size())
+		{
+			sendPlayerMessage("USAGE: /model [id(0-696)]", 125, 125, 125);
+			return true;
+		}
+		int id;
+		try {
+			id = stoi(params[0]);
+		}
+		catch (invalid_argument err)
+		{
+			sendPlayerMessage("WARNING: id must be numeric", 255, 50, 50);
+			return true;
+		}
+		if (id < 0 || id >= MAX_MODELS)
+		{
+			sendPlayerMessage("USAGE: /model [id(0-696)]", 125, 125, 125);
+			return true;
+		}
+		skin = GAMEPLAY::GET_HASH_KEY((char *)models[id]);
+		needSkinChange = true;
+		skinId = id;
 		return true;
 	}
 	else if (!cmd.compare("/save"))
@@ -183,7 +221,7 @@ void specKeyPressed(DWORD key)
 			{
 				historyPos++;
 				curChatText = chatHistory[chatHistory.size() - historyPos - 1];
-				cursorPos = curChatText.size();
+				cursorPos = (int)curChatText.size();
 			}
 			break;
 		}
@@ -194,7 +232,7 @@ void specKeyPressed(DWORD key)
 			{
 				historyPos--;
 				curChatText = chatHistory[chatHistory.size() - historyPos - 1];
-				cursorPos = curChatText.size();
+				cursorPos = (int)curChatText.size();
 			}
 			else if (historyPos == 0)
 			{
@@ -221,6 +259,29 @@ void main()
 	sendPlayerMessage("Press F6 to open chat textbox");
 	while (true)
 	{
+		Player player = PLAYER::PLAYER_ID();
+		Ped playerPed = PLAYER::PLAYER_PED_ID();
+		if (ENTITY::DOES_ENTITY_EXIST(playerPed))
+		{
+			Hash model = ENTITY::GET_ENTITY_MODEL(playerPed);
+			if (ENTITY::IS_ENTITY_DEAD(playerPed) || PLAYER::IS_PLAYER_BEING_ARRESTED(player, TRUE))
+			{
+				if (model != GAMEPLAY::GET_HASH_KEY("player_zero") &&
+					model != GAMEPLAY::GET_HASH_KEY("player_one") &&
+					model != GAMEPLAY::GET_HASH_KEY("player_two"))
+				{
+					model = GAMEPLAY::GET_HASH_KEY("player_zero");
+					STREAMING::REQUEST_MODEL(model);
+					while (!STREAMING::HAS_MODEL_LOADED(model))
+						WAIT(0);
+					PLAYER::SET_PLAYER_MODEL(player, model);
+					PED::SET_PED_DEFAULT_COMPONENT_VARIATION(playerPed);
+					STREAMING::SET_MODEL_AS_NO_LONGER_NEEDED(model);
+					while (ENTITY::IS_ENTITY_DEAD(PLAYER::PLAYER_PED_ID()) || PLAYER::IS_PLAYER_BEING_ARRESTED(player, TRUE))
+						WAIT(0);
+				}
+			}
+		}
 		if (chatEnabled)
 		{
 			GRAPHICS::DRAW_RECT(0.0f, 0.0f, 0.9f, 0.645f, 0, 0, 0, 200);
@@ -238,6 +299,22 @@ void main()
 			GRAPHICS::DRAW_RECT(0.0f, 0.340f, 0.9f, 0.040f, 125, 125, 125, 255);
 			drawText("> " + chatText, 0.0f, 0.330f, 255, 255, 255);
 			UI::SET_PAUSE_MENU_ACTIVE(false);
+		}
+		if (needSkinChange)
+		{
+			if (STREAMING::IS_MODEL_IN_CDIMAGE(skin) && STREAMING::IS_MODEL_VALID(skin))
+			{
+				STREAMING::REQUEST_MODEL(skin);
+				while (!STREAMING::HAS_MODEL_LOADED(skin))
+					WAIT(0);
+				PLAYER::SET_PLAYER_MODEL(PLAYER::PLAYER_ID(), skin);
+				PED::SET_PED_DEFAULT_COMPONENT_VARIATION(PLAYER::PLAYER_PED_ID());
+				STREAMING::SET_MODEL_AS_NO_LONGER_NEEDED(skin);
+				sendPlayerMessage(string("Your model changed to ") + models[skinId], 0, 200, 0);
+			}
+			else
+				sendPlayerMessage("Unknown error!", 200, 0, 0);
+			needSkinChange = false;
 		}
 		WAIT(0);
 	}
