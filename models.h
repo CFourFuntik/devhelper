@@ -3,7 +3,7 @@
 
 #define MAX_MODELS 697
 
-LPCSTR models[MAX_MODELS] = {
+const char* models[MAX_MODELS] = {
 	"A_C_Boar",
 	"A_C_Chickenhawk",
 	"A_C_Chimp",

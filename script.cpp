@@ -2,7 +2,6 @@
 F4 - save position
 */
 #include "script.h"
-#include "models.h"
 
 vector<chatLine> chatLines;
 vector<string> chatHistory;
@@ -35,6 +34,7 @@ int skinId;
 void sendPlayerMessage(const string &message, int r = 255, int g = 255, int b = 255)
 {
 	chatLines.push_back({ message , r, g, b});
+	LOG::write(string("CHAT: ") + message);
 	//temporary
 	if (chatLines.size() > 10)
 		chatLines.erase(chatLines.begin(), chatLines.begin() + 1);
@@ -58,6 +58,247 @@ bool commandProcessor(string command)
 		sendPlayerMessage("/save /clear", 0, 125, 0);
 		sendPlayerMessage("/randcomps /setcomps /model", 0, 125, 0);
 		sendPlayerMessage("/randprops /setprops /clearprops", 0, 125, 0);
+		return true;
+	}
+	else if (!cmd.compare("/primcolor"))
+	{
+		if (params.size() < 3)
+		{
+			sendPlayerMessage("USAGE: /primcolor [rColor] [gColor] [bColor]", 125, 125, 125);
+			return true;
+		}
+		if (!PED::IS_PED_IN_ANY_VEHICLE(PLAYER::PLAYER_PED_ID(), 0)) {
+			sendPlayerMessage("Your must be in vehicle", 255, 0, 0);
+			return true;
+		}
+		lastVehId = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+
+		int rColor;
+		try {
+			rColor = stoi(params[0]);
+		}
+		catch (invalid_argument err)
+		{
+			sendPlayerMessage("WARNING: rColor must be numeric", 255, 50, 50);
+			return true;
+		}
+		if (rColor < 0 || rColor > 255)
+		{
+			sendPlayerMessage("WARNING: invalid rColor value [0-255]", 255, 0, 0);
+			return true;
+		}
+
+		int gColor;
+		try {
+			gColor = stoi(params[1]);
+		}
+		catch (invalid_argument err)
+		{
+			sendPlayerMessage("WARNING: gColor must be numeric", 255, 50, 50);
+			return true;
+		}
+		if (gColor < 0 || gColor > 255)
+		{
+			sendPlayerMessage("WARNING: invalid gColor value [0-255]", 255, 0, 0);
+			return true;
+		}
+
+		int bColor;
+		try {
+			bColor = stoi(params[2]);
+		}
+		catch (invalid_argument err)
+		{
+			sendPlayerMessage("WARNING: bColor must be numeric", 255, 50, 50);
+			return true;
+		}
+		if (bColor < 0 || bColor > 255)
+		{
+			sendPlayerMessage("WARNING: invalid bColor value [0-255]", 255, 0, 0);
+			return true;
+		}
+		VEHICLE::SET_VEHICLE_CUSTOM_PRIMARY_COLOUR(lastVehId, rColor, gColor, bColor);
+		sendPlayerMessage("Primary colour changed", 0, 255, 0);
+	}
+	else if (!cmd.compare("/seccolor"))
+	{
+		if (params.size() < 3)
+		{
+			sendPlayerMessage("USAGE: /seccolor [rColor] [gColor] [bColor]", 125, 125, 125);
+			return true;
+		}
+		if (!PED::IS_PED_IN_ANY_VEHICLE(PLAYER::PLAYER_PED_ID(), 0)) {
+			sendPlayerMessage("Your must be in vehicle", 255, 0, 0);
+			return true;
+		}
+		lastVehId = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+
+		int rColor;
+		try {
+			rColor = stoi(params[0]);
+		}
+		catch (invalid_argument err)
+		{
+			sendPlayerMessage("WARNING: rColor must be numeric", 255, 50, 50);
+			return true;
+		}
+		if (rColor < 0 || rColor > 255)
+		{
+			sendPlayerMessage("WARNING: invalid rColor value [0-255]", 255, 0, 0);
+			return true;
+		}
+
+		int gColor;
+		try {
+			gColor = stoi(params[1]);
+		}
+		catch (invalid_argument err)
+		{
+			sendPlayerMessage("WARNING: gColor must be numeric", 255, 50, 50);
+			return true;
+		}
+		if (gColor < 0 || gColor > 255)
+		{
+			sendPlayerMessage("WARNING: invalid gColor value [0-255]", 255, 0, 0);
+			return true;
+		}
+
+		int bColor;
+		try {
+			bColor = stoi(params[2]);
+		}
+		catch (invalid_argument err)
+		{
+			sendPlayerMessage("WARNING: bColor must be numeric", 255, 50, 50);
+			return true;
+		}
+		if (bColor < 0 || bColor > 255)
+		{
+			sendPlayerMessage("WARNING: invalid bColor value [0-255]", 255, 0, 0);
+			return true;
+		}
+		VEHICLE::SET_VEHICLE_CUSTOM_SECONDARY_COLOUR(lastVehId, rColor, gColor, bColor);
+		sendPlayerMessage("Secondary colour changed", 0, 255, 0);
+	}
+	else if (!cmd.compare("/maxmod"))
+	{
+		if (!PED::IS_PED_IN_ANY_VEHICLE(PLAYER::PLAYER_PED_ID(), 0)) {
+			sendPlayerMessage("Your must be in vehicle", 255, 0, 0);
+			return true;
+		}
+		lastVehId = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+		VEHICLE::SET_VEHICLE_MOD_KIT(lastVehId, 0);
+
+		for (int i = 0; i < 17; ++i)
+			if(VEHICLE::GET_NUM_VEHICLE_MODS(lastVehId, i))
+				VEHICLE::SET_VEHICLE_MOD(lastVehId, i, VEHICLE::GET_NUM_VEHICLE_MODS(lastVehId, i) - 1, true);
+		sendPlayerMessage("Your vehicle max tuned by Xzibit :-)", 0, 255, 0);
+		return true;
+	}
+	else if (!cmd.compare("/vehmod"))
+	{
+		if (params.size() < 2)
+		{
+			sendPlayerMessage("USAGE: /vehmod [modType] [modIndex]", 125, 125, 125);
+			return true;
+		}
+		if (!PED::IS_PED_IN_ANY_VEHICLE(PLAYER::PLAYER_PED_ID(), 0)) {
+			sendPlayerMessage("Your must be in vehicle", 255, 0, 0);
+			return true;
+		}
+		lastVehId = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+		VEHICLE::SET_VEHICLE_MOD_KIT(lastVehId, 0);
+
+		int modType;
+		try {
+			modType = stoi(params[0]);
+		}
+		catch (invalid_argument err)
+		{
+			sendPlayerMessage("WARNING: modType must be numeric", 255, 50, 50);
+			return true;
+		}
+
+		if (VEHICLE::GET_NUM_VEHICLE_MODS(lastVehId, modType) == 0)
+		{
+			sendPlayerMessage("WARNING: This mod does not supported by this vehicle", 255, 0, 0);
+			return true;
+		}
+
+		int modIndex;
+		try {
+			modIndex = stoi(params[1]);
+		}
+		catch (invalid_argument err)
+		{
+			sendPlayerMessage("WARNING: modIndex must be numeric", 255, 50, 50);
+			return true;
+		}
+
+		if (modIndex < 0 || modIndex > VEHICLE::GET_NUM_VEHICLE_MODS(lastVehId, modType))
+		{
+			stringstream buff;
+			buff << "WARNING: invalid modIndex value [0-" << VEHICLE::GET_NUM_VEHICLE_MODS(lastVehId, modType) << "]";
+			sendPlayerMessage(buff.str(), 255, 0, 0);
+			return true;
+		}
+		VEHICLE::SET_VEHICLE_MOD(lastVehId, modType, modIndex, true);
+		sendPlayerMessage("Vehicle mods installed", 0, 255, 0);
+		return true;
+	}
+	else if (!cmd.compare("/modkit"))
+	{
+		if (!params.size())
+		{
+			sendPlayerMessage("USAGE: /modkit [id]", 125, 125, 125);
+			return true;
+		}
+		if (!PED::IS_PED_IN_ANY_VEHICLE(PLAYER::PLAYER_PED_ID(), 0)) {
+			sendPlayerMessage("Your must be in vehicle", 255, 0, 0);
+			return true;
+		}
+		Vehicle lastVehId = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+		int modKit;
+		try {
+			modKit = stoi(params[0]);
+		}
+		catch (invalid_argument err)
+		{
+			sendPlayerMessage("WARNING: modKit must be numeric", 255, 50, 50);
+			return true;
+		}
+		if (modKit < 0 || modKit > VEHICLE::GET_NUM_MOD_KITS(lastVehId))
+		{
+			stringstream buff;
+			buff << "WARNING: invalid vehId value [0-" << VEHICLE::GET_NUM_MOD_KITS(lastVehId) << "]";
+			sendPlayerMessage(buff.str(), 255, 0, 0);
+			return true;
+		}
+		modKitId = modKit;
+		return true;
+	}
+	else if (!cmd.compare("/vehicle"))
+	{
+		if (!params.size())
+		{
+			sendPlayerMessage("USAGE: /vehicle [id]", 125, 125, 125);
+			return true;
+		}
+		int vehId;
+		try {
+			vehId = stoi(params[0]);
+		}
+		catch (invalid_argument err)
+		{
+			sendPlayerMessage("WARNING: vehId must be numeric", 255, 50, 50);
+			return true;
+		}
+		if (vehId < 0 || vehId >= MAX_VEHICLES)
+		{
+			sendPlayerMessage("WARNING: invalid vehId value [0-344]", 255, 50, 50);
+			return true;
+		}
+		vehCreateId = vehId;
 		return true;
 	}
 	else if (!cmd.compare("/randcomps"))
@@ -402,6 +643,40 @@ void main()
 						WAIT(0);
 				}
 			}
+		}
+		if (modKitId != -1)
+		{
+			VEHICLE::SET_VEHICLE_MOD_KIT(lastVehId, modKitId);
+			sendPlayerMessage("Your car\'s modkit changed", 0, 255, 0);
+			modKitId = -1;
+		}
+		if (vehCreateId != -1)
+		{
+			stringstream buff;
+			DWORD model = GAMEPLAY::GET_HASH_KEY((char *)vehicles[vehCreateId]);
+			buff << "Loading vehicle [" << vehCreateId << "] " << vehicles[vehCreateId] << ", Hash = 0x" << std::hex << model;
+			LOG::write(buff.str());
+			if (STREAMING::IS_MODEL_IN_CDIMAGE(model) && STREAMING::IS_MODEL_A_VEHICLE(model))
+			{
+				STREAMING::REQUEST_MODEL(model);
+				while (!STREAMING::HAS_MODEL_LOADED(model)) WAIT(0);
+				Vector3 coords = ENTITY::GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(PLAYER::PLAYER_PED_ID(), 0.0, 5.0, 0.0);
+				Vehicle veh = VEHICLE::CREATE_VEHICLE(model, coords.x, coords.y, coords.z, 0.0, 1, 1);
+				VEHICLE::SET_VEHICLE_ON_GROUND_PROPERLY(veh);
+
+				ENTITY::SET_ENTITY_HEADING(veh, ENTITY::GET_ENTITY_HEADING(PLAYER::PLAYER_PED_ID()));
+				PED::SET_PED_INTO_VEHICLE(PLAYER::PLAYER_PED_ID(), veh, -1);
+
+				WAIT(0);
+				STREAMING::SET_MODEL_AS_NO_LONGER_NEEDED(model);
+				ENTITY::SET_VEHICLE_AS_NO_LONGER_NEEDED(&veh);
+				sendPlayerMessage(string("Vehicle ") + vehicles[vehCreateId] + " created.", 0, 255, 0);
+			}
+			else
+			{
+				sendPlayerMessage("Error when creating vehicle", 255, 0, 0);
+			}
+			vehCreateId = -1;
 		}
 		if (chatEnabled)
 		{

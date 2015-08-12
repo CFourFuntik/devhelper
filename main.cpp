@@ -5,8 +5,9 @@
 */
 
 #include "inc\main.h"
-#include "script.h"
 #include "keyboard.h"
+
+void ScriptMain();
 
 BOOL APIENTRY DllMain(HMODULE hInstance, DWORD reason, LPVOID lpReserved)
 {
