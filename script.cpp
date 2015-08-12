@@ -55,13 +55,142 @@ bool commandProcessor(string command)
 
 	if (!cmd.compare("/help"))
 	{
-		sendPlayerMessage("/save /clear /startfire /stopfire", 0, 125, 0);
+		sendPlayerMessage("/save /clear", 0, 125, 0);
+		sendPlayerMessage("/randcomps /setcomps /model", 0, 125, 0);
+		sendPlayerMessage("/randprops /setprops /clearprops", 0, 125, 0);
 		return true;
 	}
 	else if (!cmd.compare("/randcomps"))
 	{
 		PED::SET_PED_RANDOM_COMPONENT_VARIATION(PLAYER::PLAYER_PED_ID(), FALSE);
 		sendPlayerMessage("Random component variation setted", 0, 200, 0);
+		return true;
+	}
+	else if (!cmd.compare("/setcomps"))
+	{
+		if (params.size() < 4)
+		{
+			sendPlayerMessage("USAGE: /setcomps [component_id] [drawable_id] [texture_id] [palette_id]", 125, 125, 125);
+			return true;
+		}
+		int componentId, drawableId, textureId, paletteId;
+		try {
+			componentId = stoi(params[0]);
+		}
+		catch (invalid_argument err)
+		{
+			sendPlayerMessage("WARNING: componentId must be numeric", 255, 50, 50);
+			return true;
+		}
+
+		try {
+			drawableId = stoi(params[1]);
+		}
+		catch (invalid_argument err)
+		{
+			sendPlayerMessage("WARNING: drawableId must be numeric", 255, 50, 50);
+			return true;
+		}
+
+		try {
+			textureId = stoi(params[2]);
+		}
+		catch (invalid_argument err)
+		{
+			sendPlayerMessage("WARNING: textureId must be numeric", 255, 50, 50);
+			return true;
+		}
+
+		try {
+			paletteId = stoi(params[3]);
+		}
+		catch (invalid_argument err)
+		{
+			sendPlayerMessage("WARNING: paletteId must be numeric", 255, 50, 50);
+			return true;
+		}
+
+		if (PED::IS_PED_COMPONENT_VARIATION_VALID(PLAYER::PLAYER_PED_ID(), componentId, drawableId, textureId))
+		{
+			PED::SET_PED_COMPONENT_VARIATION(PLAYER::PLAYER_PED_ID(), componentId, drawableId, textureId, paletteId);
+			sendPlayerMessage("Components changed", 0, 200, 0);
+			return true;
+		}
+		else
+		{
+			sendPlayerMessage("ERROR: Components invalid", 255, 0, 0);
+			return true;
+		}
+
+		return true;
+	}
+	else if (!cmd.compare("/randprops"))
+	{
+		PED::SET_PED_RANDOM_PROPS(PLAYER::PLAYER_PED_ID());
+		sendPlayerMessage("Random properties setted", 0, 200, 0);
+		return true;
+	}
+	else if (!cmd.compare("/clearprops"))
+	{
+		PED::CLEAR_ALL_PED_PROPS(PLAYER::PLAYER_PED_ID());
+		return true;
+	}
+	else if (!cmd.compare("/setprops"))
+	{
+		if (params.size() < 4)
+		{
+			sendPlayerMessage("USAGE: /setprops [component_id] [drawable_id] [texture_id] [palette_id]", 125, 125, 125);
+			return true;
+		}
+		int componentId, drawableId, textureId, paletteId;
+		try {
+			componentId = stoi(params[0]);
+		}
+		catch (invalid_argument err)
+		{
+			sendPlayerMessage("WARNING: componentId must be numeric", 255, 50, 50);
+			return true;
+		}
+
+		try {
+			drawableId = stoi(params[1]);
+		}
+		catch (invalid_argument err)
+		{
+			sendPlayerMessage("WARNING: drawableId must be numeric", 255, 50, 50);
+			return true;
+		}
+
+		try {
+			textureId = stoi(params[2]);
+		}
+		catch (invalid_argument err)
+		{
+			sendPlayerMessage("WARNING: textureId must be numeric", 255, 50, 50);
+			return true;
+		}
+
+		try {
+			paletteId = stoi(params[3]);
+		}
+		catch (invalid_argument err)
+		{
+			sendPlayerMessage("WARNING: paletteId must be numeric", 255, 50, 50);
+			return true;
+		}
+
+		if (PED::IS_PED_PROP_INDEX_VALID(PLAYER::PLAYER_PED_ID(), componentId, drawableId, textureId))
+		{
+			PED::SET_PED_PROP_INDEX(PLAYER::PLAYER_PED_ID(), componentId, drawableId, textureId, paletteId);
+			sendPlayerMessage("Properties changed", 0, 200, 0);
+			return true;
+		}
+		else
+		{
+			sendPlayerMessage("ERROR: Components invalid", 255, 0, 0);
+			return true;
+		}
+
 		return true;
 	}
 	else if (!cmd.compare("/model"))
@@ -129,16 +258,6 @@ bool commandProcessor(string command)
 	else if (!cmd.compare("/clear"))
 	{
 		chatLines.clear();
-		return true;
-	}
-	else if (!cmd.compare("/startfire"))
-	{
-		FIRE::START_ENTITY_FIRE(PLAYER::PLAYER_PED_ID());
-		return true;
-	}
-	else if (!cmd.compare("/stopfire"))
-	{
-		FIRE::STOP_ENTITY_FIRE(PLAYER::PLAYER_PED_ID());
 		return true;
 	}
 	return false;
@@ -247,14 +366,16 @@ void specKeyPressed(DWORD key)
 
 void main()
 {
-	char *pValue;
-	size_t len;
-	errno_t err = _dupenv_s(&pValue, &len, "USERPROFILE");
-	if (err)
-		fileName = string("C:\\savedcoords.txt");
-	else 
-		fileName = string(pValue) + "\\Documents\\Rockstar Games\\GTA V\\savedcoords.txt";
-
+	if (!CONFIG::get("saveFile", fileName))
+	{
+		char *pValue;
+		size_t len;
+		errno_t err = _dupenv_s(&pValue, &len, "USERPROFILE");
+		if (err)
+			fileName = string("C:\\savedcoords.txt");
+		else
+			fileName = string(pValue) + "\\Documents\\Rockstar Games\\GTA V\\savedcoords.txt";
+	}
 	sendPlayerMessage("GTAV DevHelper by Funtik Initialized");
 	sendPlayerMessage("Press F6 to open chat textbox");
 	while (true)

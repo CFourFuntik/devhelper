@@ -34,3 +34,30 @@ namespace LOG
 		log.close();
 	}
 }
+
+namespace CONFIG
+{
+	bool get(const std::string &param, std::string &value)
+	{
+		std::string line;
+		std::ifstream config(CONFIG_FILE_NAME);
+		if (!config.good()) return false;
+		while (std::getline(config, line))
+		{
+			std::vector<std::string> temp;
+			temp = split(line, ' ');
+			if (!temp[0].compare(param))
+			{
+				value = temp[1];
+				for (int i = 2; i < temp.size(); ++i)
+				{
+					value += std::string(" ") + temp[i];
+				}
+				config.close();
+				return true;
+			}
+		}
+		config.close();
+		return false;
+	}
+}

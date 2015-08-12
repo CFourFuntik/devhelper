@@ -683,7 +683,7 @@ namespace PED
 	static Any _0x39D55A620FCB6A3A(Any p0, Any p1, Any p2, Any p3) { return invoke<Any>(0x39D55A620FCB6A3A, p0, p1, p2, p3); } // 0x39D55A620FCB6A3A 0x45F3BDFB
 	static BOOL _0x66680A92700F43DF(Any p0) { return invoke<BOOL>(0x66680A92700F43DF, p0); } // 0x66680A92700F43DF 0xC6517D52
 	static void _0x5AAB586FFEC0FD96(Any p0) { invoke<Void>(0x5AAB586FFEC0FD96, p0); } // 0x5AAB586FFEC0FD96 0x6435F67F
-	static Any _0x2B16A3BFF1FBCE49(Any p0, Any p1, Any p2, Any p3) { return invoke<Any>(0x2B16A3BFF1FBCE49, p0, p1, p2, p3); } // 0x2B16A3BFF1FBCE49 0xC0E23671
+	static BOOL IS_PED_PROP_INDEX_VALID(Ped ped, int componentId, int drawableId, int TextureId) { return invoke<Any>(0x2B16A3BFF1FBCE49, ped, componentId, drawableId, TextureId); } // 0x2B16A3BFF1FBCE49 0xC0E23671
 	static BOOL _0x784002A632822099(Any p0) { return invoke<BOOL>(0x784002A632822099, p0); } // 0x784002A632822099 0x3B0CA391
 	static void _0xF79F9DEF0AADE61A(Any p0) { invoke<Void>(0xF79F9DEF0AADE61A, p0); } // 0xF79F9DEF0AADE61A 0xFD103BA7
 	static int GET_PED_PROP_INDEX(Ped ped, int componentId) { return invoke<int>(0x898CC20EA75BACD8, ped, componentId); } // 0x898CC20EA75BACD8 0x746DDAC0
