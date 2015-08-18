@@ -60,4 +60,15 @@ namespace CONFIG
 		config.close();
 		return false;
 	}
+
+	bool loadList(const std::string &filename, std::vector<std::string> &value)
+	{
+		std::string line;
+		std::ifstream list(filename);
+		if (!list.good()) return false;
+		while (std::getline(list, line))
+			value.push_back(line);
+		list.close();
+		return true;
+	}
 }

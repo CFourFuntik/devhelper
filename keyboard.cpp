@@ -6,12 +6,10 @@
 
 #include "keyboard.h"
 
-const int KEYS_SIZE = 255;
-
-bool pressing[KEYS_SIZE];
+bool pressing[255];
 
 void keyPressed(WCHAR symbol);
-void specKeyPressed(DWORD key);
+void specKeyPressed(DWORD key, bool pressed = true);
 
 int VKToChar(unsigned int vk, WCHAR *s)
 {
@@ -34,13 +32,15 @@ void OnKeyboardMessage(DWORD key, WORD repeats, BYTE scanCode, BOOL isExtended, 
 			int res = VKToChar(key, symb);
 			if(key != VK_RETURN && key != VK_BACK && key != VK_DELETE && res)
 				keyPressed(symb[0]);
-			else
-				specKeyPressed(key);
+			specKeyPressed(key);
 		}
 	}
 	else
 	{
 		if (pressing[key])
+		{
+			specKeyPressed(key, false);
 			pressing[key] = false;
+		}
 	}
 }

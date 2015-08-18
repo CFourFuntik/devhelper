@@ -9,6 +9,7 @@
   <ItemGroup>
     <ClCompile Include="keyboard.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="object.cpp" />
     <ClCompile Include="script.cpp" />
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
@@ -19,8 +20,7 @@
     <ClInclude Include="inc\natives.h" />
     <ClInclude Include="inc\types.h" />
     <ClInclude Include="keyboard.h" />
-    <ClInclude Include="models.h" />
-    <ClInclude Include="vehicles.h" />
+    <ClInclude Include="object.h" />
     <ClInclude Include="script.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>
@@ -62,6 +62,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;LiL_Dev_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FloatingPointModel>Fast</FloatingPointModel>
+      <DisableSpecificWarnings>4244;4305</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

@@ -1,30 +1,56 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <ClCompile Include="keyboard.cpp">
+      <Filter>cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="script.cpp">
+      <Filter>cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="utils.cpp">
+      <Filter>cpp</Filter>
+    </ClCompile>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="script.cpp" />
-    <ClCompile Include="keyboard.cpp" />
-    <ClCompile Include="utils.cpp" />
+    <ClCompile Include="object.cpp">
+      <Filter>cpp</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="script.h" />
-    <ClInclude Include="keyboard.h" />
-    <ClInclude Include="utils.h" />
-    <ClInclude Include="inc\enums.h" />
+    <ClInclude Include="inc\nativeCaller.h">
+      <Filter>scripthook</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\natives.h">
+      <Filter>scripthook</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\types.h">
+      <Filter>scripthook</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\enums.h">
+      <Filter>scripthook</Filter>
+    </ClInclude>
+    <ClInclude Include="keyboard.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="script.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="utils.h">
+      <Filter>headers</Filter>
+    </ClInclude>
     <ClInclude Include="inc\main.h" />
-    <ClInclude Include="inc\nativeCaller.h" />
-    <ClInclude Include="inc\natives.h" />
-    <ClInclude Include="inc\types.h" />
-    <ClInclude Include="models.h">
-      <Filter>entities</Filter>
-    </ClInclude>
-    <ClInclude Include="vehicles.h">
-      <Filter>entities</Filter>
+    <ClInclude Include="object.h">
+      <Filter>headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="entities">
-      <UniqueIdentifier>{f589c4ae-4e24-4104-850e-0c775523c9e4}</UniqueIdentifier>
+    <Filter Include="scripthook">
+      <UniqueIdentifier>{776f70c0-8daf-4c08-bc2e-51997fc97a2f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="cpp">
+      <UniqueIdentifier>{6077c2c9-294d-4569-941c-fdeeac7d77c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="headers">
+      <UniqueIdentifier>{07363e4a-95f6-40e2-9b06-ab5d4d63f67a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
